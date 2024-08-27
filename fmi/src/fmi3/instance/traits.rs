@@ -1,5 +1,6 @@
 //! Traits for the different instance types.
 
+use fmi_sys::fmi3::fmi3IntervalQualifier;
 use crate::traits::FmiInstance;
 
 use super::Fmi3Status;
@@ -94,6 +95,8 @@ pub trait Common: FmiInstance {
     fn get_uint64(&mut self, vrs: &[Self::ValueRef], values: &mut [u64]) -> Fmi3Status;
     fn get_string(&mut self, vrs: &[Self::ValueRef], values: &mut [String]) -> Fmi3Status;
     fn get_binary(&mut self, vrs: &[Self::ValueRef], values: &mut [Vec<u8>]) -> Fmi3Status;
+    fn get_clock(&mut self, vrs: &[Self::ValueRef], values: &mut [bool]) -> Fmi3Status;
+    fn get_interval_decimal(&mut self, vrs: &[Self::ValueRef], intervals: &mut [f64], qualifiers: &mut [fmi3IntervalQualifier]) -> Fmi3Status;
 
     fn set_boolean(&mut self, vrs: &[Self::ValueRef], values: &[bool]) -> Fmi3Status;
     fn set_float32(&mut self, vrs: &[Self::ValueRef], values: &[f32]) -> Fmi3Status;
@@ -116,6 +119,7 @@ pub trait Common: FmiInstance {
         vrs: &[Self::ValueRef],
         values: impl Iterator<Item = &'b [u8]>,
     ) -> Fmi3Status;
+    fn set_clock(&mut self, vrs: &[Self::ValueRef], values: &[bool]) -> Fmi3Status;
 
     /// See [https://fmi-standard.org/docs/3.0.1/#fmi3GetFMUState]
     #[cfg(disabled)]

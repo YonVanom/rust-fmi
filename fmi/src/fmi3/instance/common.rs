@@ -139,6 +139,8 @@ impl<'a, Tag> Common for Instance<'a, Tag> {
     impl_getter_setter!(u32, get_uint32, set_uint32, fmi3GetUInt32, fmi3SetUInt32);
     impl_getter_setter!(u64, get_uint64, set_uint64, fmi3GetUInt64, fmi3SetUInt64);
 
+    //impl_getter_setter!(bool, get_clock, set_clock, fmi3GetClock, fmi3SetClock);
+
     fn get_string(
         &mut self,
         vrs: &[binding::fmi3ValueReference],
@@ -248,6 +250,52 @@ impl<'a, Tag> Common for Instance<'a, Tag> {
             )
         }
         .into()
+    }
+
+    fn get_clock(&mut self,
+                 vrs: &[binding::fmi3ValueReference],
+                 values: &mut [binding::fmi3Clock]
+    ) -> Fmi3Status {
+        unsafe {
+            self.binding.fmi3GetClock(
+                self.ptr,
+                vrs.as_ptr(),
+                vrs.len() as _,
+                values.as_mut_ptr(),
+            )
+        }
+        .into()
+    }
+
+    fn set_clock(&mut self,
+                 vrs: &[binding::fmi3ValueReference],
+                 values: &[binding::fmi3Clock]
+    ) -> Fmi3Status {
+        unsafe {
+            self.binding.fmi3SetClock(
+                self.ptr,
+                vrs.as_ptr(),
+                vrs.len() as _,
+                values.as_ptr(),
+            )
+        }
+        .into()
+    }
+
+    fn get_interval_decimal(&mut self,
+                            vrs: &[binding::fmi3ValueReference],
+                            intervals: &mut [binding::fmi3Float64],
+                            qualifiers: &mut [binding::fmi3IntervalQualifier]
+    ) -> Fmi3Status {
+        unsafe {
+            self.binding.fmi3GetIntervalDecimal(
+                self.ptr,
+                vrs.as_ptr(),
+                vrs.len() as _,
+                intervals.as_mut_ptr(),
+                qualifiers.as_mut_ptr(),
+            )
+        }.into()
     }
 
     #[cfg(disabled)]
