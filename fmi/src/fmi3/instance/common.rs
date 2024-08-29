@@ -147,16 +147,18 @@ impl<'a, Tag> Common for Instance<'a, Tag> {
         values: &mut [String],
     ) -> Fmi3Status {
         unsafe {
-            // Create a mutable vec of fmi3String with uninitialized values to pass to ffi
-            let mut ret_values = MaybeUninit::<Vec<binding::fmi3String>>::uninit();
+            // Initialize a vector for fmi3String with the length of `values`
+            // and set all initial elements to null pointers.
+            let mut ret_values: Vec<binding::fmi3String> = vec![std::ptr::null(); values.len()];
+
             let stat = self.binding.fmi3GetString(
                 self.ptr,
                 vrs.as_ptr(),
                 vrs.len() as _,
-                ret_values.assume_init_mut().as_mut_ptr(),
-                ret_values.assume_init_ref().len() as _,
+                ret_values.as_mut_ptr(),
+                ret_values.len() as _,
             );
-            for (v, ret) in ret_values.assume_init_ref().iter().zip(values.iter_mut()) {
+            for (v, ret) in ret_values.iter().zip(values.iter_mut()) {
                 *ret = std::ffi::CStr::from_ptr(*v)
                     .to_str()
                     .expect("Error converting C string")
